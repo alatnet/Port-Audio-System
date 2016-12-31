@@ -19,8 +19,8 @@
 	#define CLOG(...) CryLog(__VA_ARGS__)
 	#define PAS_CryGame //use cryengine/lumberyard specific code
 #else //otherwise, generic compiling
-	#define LYGameStart
-	#define LYGameEnd
+	#define NSGameStart
+	#define NSGameEnd
 	#define CLOG(...)
 #endif
 
