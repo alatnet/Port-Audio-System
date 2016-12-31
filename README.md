@@ -51,7 +51,7 @@ int main(){
 
   //wait for user input
   std::cout<<"Press enter to continue.";
-  char * in;
+  char in;
   std::cin>>in;
 
   //cleanup
