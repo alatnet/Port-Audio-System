@@ -7,6 +7,9 @@
 #include "IAudioSource.h"
 
 NSGameStart
+	/*
+	Audio source that utilizes libsndfile to stream audio files.
+	*/
 	class AudioSource_Libsnd : public IAudioSource {
 	REGISTER_AUDIO_SOURCE("libsndfile", AudioSource_Libsnd)
 	public:
@@ -21,7 +24,7 @@ NSGameStart
 		double GetSampleRate() { return this->sfInfo.samplerate; }
 		AudioSourceTime GetLength() { return this->m_timeLength; }
 		long long GetFrameLength() { return this->sfInfo.frames; }
-		AudioFrame::Type GetFrameType();
+		AudioFrame::Type GetFrameType() { return (AudioFrame::Type)this->sfInfo.channels; }
 	#ifdef PAS_CryGame
 		public:
 			void GetMemoryUsage(ICrySizer* pSizer) const;

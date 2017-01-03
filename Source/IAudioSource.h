@@ -11,49 +11,49 @@ NSGameStart
 	//all the number of channels for a frame
 	namespace AudioFrame {
 		//mono channel
-		struct _1 {
+		struct af1 {
 			float mono;
 
-			_1() : mono(0.0f) {}
+			af1() : mono(0.0f) {}
 		};
 
 		// 2 channel(left, right) - common
-		struct _2 {
+		struct af2 {
 			float left;
 			float right;
 
-			_2() : left(0.0f), right(0.0f) {}
+			af2() : left(0.0f), right(0.0f) {}
 		};
 
 		// 2.1 channel (left, right, subwoofer)
-		struct _21 {
+		struct af21 {
 			float left;
 			float right;
 			float sub;
-			_21() : left(0.0f), right(0.0f), sub(0.0f) {}
+			af21() : left(0.0f), right(0.0f), sub(0.0f) {}
 		};
 
 		// 3 channel (left, right, center)
-		struct _3 {
+		struct af3 {
 			float left;
 			float right;
 			float center;
 
-			_3() : left(0.0f), right(0.0f), center(0.0f) {}
+			af3() : left(0.0f), right(0.0f), center(0.0f) {}
 		};
 
 		// 3.1 channel (left, right, center, subwoofer)
-		struct _31 {
+		struct af31 {
 			float left;
 			float right;
 			float center;
 			float sub;
 
-			_31() : left(0.0f), right(0.0f), center(0.0f), sub(0.0f) {}
+			af31() : left(0.0f), right(0.0f), center(0.0f), sub(0.0f) {}
 		};
 
 		// 5 channel (left, right, center, back left, back right)
-		struct _5 {
+		struct af5 {
 			union {
 				struct {
 					float left;
@@ -76,11 +76,11 @@ NSGameStart
 				};
 			};
 
-			_5() : left(0.0f), right(0.0f), center(0.0f), bleft(0.0f), bright(0.0f) {}
+			af5() : left(0.0f), right(0.0f), center(0.0f), bleft(0.0f), bright(0.0f) {}
 		};
 
 		// 5.1 channel (left, right, center, back left, back right, subwoofer)
-		struct _51 {
+		struct af51 {
 			union {
 				struct {
 					float left;
@@ -104,11 +104,11 @@ NSGameStart
 			};
 			float sub;
 
-			_51() : left(0.0f), right(0.0f), center(0.0f), bleft(0.0f), bright(0.0f), sub(0.0f) {}
+			af51() : left(0.0f), right(0.0f), center(0.0f), bleft(0.0f), bright(0.0f), sub(0.0f) {}
 		};
 
 		// 7 channel  (left, right, center, side left, side right, back left, back right)
-		struct _7 {
+		struct af7 {
 			union {
 				struct {
 					float left;
@@ -141,11 +141,11 @@ NSGameStart
 				};
 			};
 
-			_7() : left(0.0f), right(0.0f), center(0.0f), bleft(0.0f), bright(0.0f), sleft(0.0f), sright(0.0f) {}
+			af7() : left(0.0f), right(0.0f), center(0.0f), bleft(0.0f), bright(0.0f), sleft(0.0f), sright(0.0f) {}
 		};
 
 		// 7.1 channel (left, right, center, side left, side right, back left, back right, subwoofer)
-		struct _71 {
+		struct af71 {
 			union {
 				struct {
 					float left;
@@ -179,7 +179,7 @@ NSGameStart
 			};
 			float sub;
 
-			_71() : left(0.0f), right(0.0f), center(0.0f), bleft(0.0f), bright(0.0f), sleft(0.0f), sright(0.0f), sub(0.0f) {}
+			af71() : left(0.0f), right(0.0f), center(0.0f), bleft(0.0f), bright(0.0f), sleft(0.0f), sright(0.0f), sub(0.0f) {}
 		};
 
 		//audio frame types - how many channels an audio frame has
@@ -200,94 +200,94 @@ NSGameStart
 		//channel conversion
 		namespace Convert {
 			//mono
-			_1 ToMono(_2 in);
-			_1 ToMono(_21 in);
-			_1 ToMono(_3 in);
-			_1 ToMono(_31 in);
-			_1 ToMono(_5 in);
-			_1 ToMono(_51 in);
-			_1 ToMono(_7 in);
-			_1 ToMono(_71 in);
+			af1 ToMono(af2 in);
+			af1 ToMono(af21 in);
+			af1 ToMono(af3 in);
+			af1 ToMono(af31 in);
+			af1 ToMono(af5 in);
+			af1 ToMono(af51 in);
+			af1 ToMono(af7 in);
+			af1 ToMono(af71 in);
 
 			//2 ch
-			_2 To2CH(_1 in);
-			_2 To2CH(_21 in);
-			_2 To2CH(_3 in);
-			_2 To2CH(_31 in);
-			_2 To2CH(_5 in);
-			_2 To2CH(_51 in);
-			_2 To2CH(_7 in);
-			_2 To2CH(_71 in);
+			af2 To2CH(af1 in);
+			af2 To2CH(af21 in);
+			af2 To2CH(af3 in);
+			af2 To2CH(af31 in);
+			af2 To2CH(af5 in);
+			af2 To2CH(af51 in);
+			af2 To2CH(af7 in);
+			af2 To2CH(af71 in);
 
 			//2.1 ch
-			_21 To21CH(_1 in);
-			_21 To21CH(_2 in);
-			_21 To21CH(_3 in);
-			_21 To21CH(_31 in);
-			_21 To21CH(_5 in);
-			_21 To21CH(_51 in);
-			_21 To21CH(_7 in);
-			_21 To21CH(_71 in);
+			af21 To21CH(af1 in);
+			af21 To21CH(af2 in);
+			af21 To21CH(af3 in);
+			af21 To21CH(af31 in);
+			af21 To21CH(af5 in);
+			af21 To21CH(af51 in);
+			af21 To21CH(af7 in);
+			af21 To21CH(af71 in);
 
 			//3 ch
-			_3 To3CH(_1 in);
-			_3 To3CH(_2 in);
-			_3 To3CH(_21 in);
-			_3 To3CH(_31 in);
-			_3 To3CH(_5 in);
-			_3 To3CH(_51 in);
-			_3 To3CH(_7 in);
-			_3 To3CH(_71 in);
+			af3 To3CH(af1 in);
+			af3 To3CH(af2 in);
+			af3 To3CH(af21 in);
+			af3 To3CH(af31 in);
+			af3 To3CH(af5 in);
+			af3 To3CH(af51 in);
+			af3 To3CH(af7 in);
+			af3 To3CH(af71 in);
 
 			//3.1 ch
-			_31 To31CH(_1 in);
-			_31 To31CH(_2 in);
-			_31 To31CH(_21 in);
-			_31 To31CH(_3 in);
-			_31 To31CH(_5 in);
-			_31 To31CH(_51 in);
-			_31 To31CH(_7 in);
-			_31 To31CH(_71 in);
+			af31 To31CH(af1 in);
+			af31 To31CH(af2 in);
+			af31 To31CH(af21 in);
+			af31 To31CH(af3 in);
+			af31 To31CH(af5 in);
+			af31 To31CH(af51 in);
+			af31 To31CH(af7 in);
+			af31 To31CH(af71 in);
 
 			//5 ch
-			_5 To5CH(_1 in);
-			_5 To5CH(_2 in);
-			_5 To5CH(_21 in);
-			_5 To5CH(_3 in);
-			_5 To5CH(_31 in);
-			_5 To5CH(_51 in);
-			_5 To5CH(_7 in);
-			_5 To5CH(_71 in);
+			af5 To5CH(af1 in);
+			af5 To5CH(af2 in);
+			af5 To5CH(af21 in);
+			af5 To5CH(af3 in);
+			af5 To5CH(af31 in);
+			af5 To5CH(af51 in);
+			af5 To5CH(af7 in);
+			af5 To5CH(af71 in);
 
 			//5.1 ch
-			_51 To51CH(_1 in);
-			_51 To51CH(_2 in);
-			_51 To51CH(_21 in);
-			_51 To51CH(_3 in);
-			_51 To51CH(_31 in);
-			_51 To51CH(_5 in);
-			_51 To51CH(_7 in);
-			_51 To51CH(_71 in);
+			af51 To51CH(af1 in);
+			af51 To51CH(af2 in);
+			af51 To51CH(af21 in);
+			af51 To51CH(af3 in);
+			af51 To51CH(af31 in);
+			af51 To51CH(af5 in);
+			af51 To51CH(af7 in);
+			af51 To51CH(af71 in);
 
 			//7 ch
-			_7 To7CH(_1 in);
-			_7 To7CH(_2 in);
-			_7 To7CH(_21 in);
-			_7 To7CH(_3 in);
-			_7 To7CH(_31 in);
-			_7 To7CH(_5 in);
-			_7 To7CH(_51 in);
-			_7 To7CH(_71 in);
+			af7 To7CH(af1 in);
+			af7 To7CH(af2 in);
+			af7 To7CH(af21 in);
+			af7 To7CH(af3 in);
+			af7 To7CH(af31 in);
+			af7 To7CH(af5 in);
+			af7 To7CH(af51 in);
+			af7 To7CH(af71 in);
 
 			//7.1 ch
-			_71 To71CH(_1 in);
-			_71 To71CH(_2 in);
-			_71 To71CH(_21 in);
-			_71 To71CH(_3 in);
-			_71 To71CH(_31 in);
-			_71 To71CH(_5 in);
-			_71 To71CH(_51 in);
-			_71 To71CH(_7 in);
+			af71 To71CH(af1 in);
+			af71 To71CH(af2 in);
+			af71 To71CH(af21 in);
+			af71 To71CH(af3 in);
+			af71 To71CH(af31 in);
+			af71 To71CH(af5 in);
+			af71 To71CH(af51 in);
+			af71 To71CH(af7 in);
 		}
 	}
 

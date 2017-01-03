@@ -71,10 +71,6 @@ NSGameStart
 		return sf_readf_float(this->sndFile, frame, this->sfInfo.channels) == 1;
 	}
 
-	AudioFrame::Type AudioSource_Libsnd::GetFrameType() {
-		return (AudioFrame::Type)this->sfInfo.channels;
-	}
-
 	#ifdef PAS_CryGame
 		void AudioSource_Libsnd::GetMemoryUsage(ICrySizer* pSizer) const{
 			pSizer->AddObject(this, sizeof(*this));

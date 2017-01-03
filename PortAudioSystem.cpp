@@ -329,8 +329,8 @@ NSGameStart
 
 			//this is how the code below breaks out for a direct 1 - 1 channel output.
 			/*
-			AudioFrame::_2* outFrame = (AudioFrame::_2*)outputBuffer;
-			AudioFrame::_2* aframesOut = (AudioFrame::_2*)framesOut;
+			AudioFrame::af2* outFrame = (AudioFrame::_2*)outputBuffer;
+			AudioFrame::af2* aframesOut = (AudioFrame::_2*)framesOut;
 			for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) { //for each frame (based on how many frames were generated from conversion [possibly under framesPerBuffer])
 				//adjust volume
 				aframesOut[outFrameI].left *= (this->m_masterVol * this->m_vols[playingsource->section]);
@@ -355,8 +355,8 @@ NSGameStart
 
 			//this is the same code above but with the macros used below. a lot cleaner than the code above and does the same exact job.
 			/*
-			SETOUTFRAME(_2);
-			FRAMECAST(_2);
+			SETOUTFRAME(2);
+			FRAMECAST(2);
 			for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 				FRAMEVOL(left);
 				FRAMEVOL(right);
@@ -367,15 +367,15 @@ NSGameStart
 
 			//this is how the code below breaks out for a 3 channel audio source to a 2 channel output.
 			/*
-			AudioFrame::_2* outFrame = (AudioFrame::_2*)outputBuffer;
-			AudioFrame::_3* aframesOut = (AudioFrame::_3*)framesOut;
+			AudioFrame::af2* outFrame = (AudioFrame::_2*)outputBuffer;
+			AudioFrame::af3* aframesOut = (AudioFrame::_3*)framesOut;
 			for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) { //for each frame (based on how many frames were generated from conversion [possibly under framesPerBuffer])
 				//adjust volume
 				aframesOut[outFrameI].left *= (this->m_masterVol * this->m_vols[playingsource->section]);
 				aframesOut[outFrameI].right *= (this->m_masterVol * this->m_vols[playingsource->section]);
 				aframesOut[outFrameI].center *= (this->m_masterVol * this->m_vols[playingsource->section]);
 
-				AudioFrame::_2 frame = AudioFrame::Convert::To2CH(aframesOut[outFrameI]);
+				AudioFrame::af2 frame = AudioFrame::Convert::To2CH(aframesOut[outFrameI]);
 
 				if (frame.left != 0.0f) { //make sure we have data.
 					if (outFrame[outFrameI].left == 0.0f) //if the output frame has no data
@@ -393,11 +393,11 @@ NSGameStart
 				}
 			}
 			*/
-
+			
 			//this is the same code above but with the macros used below. a lot cleaner than the code above and does the same exact job.
 			/*
-			SETOUTFRAME(_2);
-			FRAMECAST(_3);
+			SETOUTFRAME(2);
+			FRAMECAST(3);
 			for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 				FRAMEVOL(left);
 				FRAMEVOL(right);
@@ -410,14 +410,14 @@ NSGameStart
 
 			//this is how the code below breaks out for a 2 channel audio source to a 3 channel output
 			/*
-			AudioFrame::_3* outFrame = (AudioFrame::_3*)outputBuffer;
-			AudioFrame::_2* aframesOut = (AudioFrame::_2*)framesOut;
+			AudioFrame::af3* outFrame = (AudioFrame::_3*)outputBuffer;
+			AudioFrame::af2* aframesOut = (AudioFrame::_2*)framesOut;
 			for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) { //for each frame (based on how many frames were generated from conversion [possibly under framesPerBuffer])
 				//adjust volume
 				aframesOut[outFrameI].left *= (this->m_masterVol * this->m_vols[playingsource->section]);
 				aframesOut[outFrameI].right *= (this->m_masterVol * this->m_vols[playingsource->section]);
 
-				AudioFrame::_3 frame = AudioFrame::Convert::To3CH(aframesOut[outFrameI]);
+				AudioFrame::af3 frame = AudioFrame::Convert::To3CH(aframesOut[outFrameI]);
 
 				if (frame.left != 0.0f) { //make sure we have data.
 					if (outFrame[outFrameI].left == 0.0f) //if the output frame has no data
@@ -445,8 +445,8 @@ NSGameStart
 
 			//this is the same code above but with the macros used below. a lot cleaner than the code above and does the same exact job.
 			/*
-			SETOUTFRAME(_3);
-			FRAMECAST(_2);
+			SETOUTFRAME(3);
+			FRAMECAST(2);
 			for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 				FRAMEVOL(left);
 				FRAMEVOL(right);
@@ -457,20 +457,21 @@ NSGameStart
 			}
 			*/
 
+AudioFrame::af1 frame;
 			//macros
 			/* While most people say that macros will make everything harder to debug, this set of macros should work fine and allows for the code to be cleaner looking (that and im really, REALLY lazy...) */
 			//set the output buffer frame to the specific type
-			#define SETOUTFRAME(type) AudioFrame::##type##* outFrame = (AudioFrame::##type##*)outputBuffer;
+			#define SETOUTFRAME(type) AudioFrame::af##type##* outFrame = (AudioFrame::af##type##*)outputBuffer;
 
 			//cast the out frames to the correct frame type
-			#define FRAMECAST(type) AudioFrame::##type##* aframesOut = (AudioFrame::##type##*)framesOut;
+			#define FRAMECAST(type) AudioFrame::af##type##* aframesOut = (AudioFrame::af##type##*)framesOut;
 
 			//adjust the out frame specific channel volume
 			#define FRAMEVOL(channel) aframesOut[outFrameI].##channel *= (this->m_masterVol * this->m_vols[playingsource->section]);
 
 			//convert to a specific frame type
-			#define FRAMECONVERT(type) AudioFrame::_##type frame = AudioFrame::Convert::To##type##CH(aframesOut[outFrameI]);
-			#define FRAMECONVERTMONO() AudioFrame::_1 frame = AudioFrame::Convert::ToMono(aframesOut[outFrameI]);
+			#define FRAMECONVERT(type) AudioFrame::af##type frame = AudioFrame::Convert::To##type##CH(aframesOut[outFrameI]);
+			#define FRAMECONVERTMONO() AudioFrame::af1 frame = AudioFrame::Convert::ToMono(aframesOut[outFrameI]);
 				
 			//output the out frame specific channel to the buffer
 			#define FRAMEOUT(channel) \
@@ -492,11 +493,11 @@ NSGameStart
 			switch (this->m_numChannels) { //based on output number of channels
 			case AudioFrame::Type::eAFT_Mono: //mono is a special-ish case to convert to.
 				{
-					SETOUTFRAME(_1);
+					SETOUTFRAME(1);
 					switch (playingsource->audioSource->GetFrameType()) { //based on audio sources number of channels
 					case AudioFrame::Type::eAFT_Mono:
 						{
-							FRAMECAST(_1);
+							FRAMECAST(1);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(mono);
 								FRAMEOUTD(mono);
@@ -505,7 +506,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_2:
 						{
-							FRAMECAST(_2);
+							FRAMECAST(2);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -516,7 +517,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_21:
 						{
-							FRAMECAST(_21);
+							FRAMECAST(21);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -528,7 +529,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_31:
 						{
-							FRAMECAST(_31);
+							FRAMECAST(31);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -541,7 +542,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_5:
 						{
-							FRAMECAST(_5);
+							FRAMECAST(5);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -555,7 +556,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_51:
 						{
-							FRAMECAST(_51);
+							FRAMECAST(51);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -570,7 +571,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_7:
 						{
-							FRAMECAST(_7);
+							FRAMECAST(7);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -586,7 +587,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_71:
 						{
-							FRAMECAST(_71);
+							FRAMECAST(71);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -606,11 +607,11 @@ NSGameStart
 				break;
 			case AudioFrame::Type::eAFT_2:
 				{
-					SETOUTFRAME(_2);
+					SETOUTFRAME(2);
 					switch (playingsource->audioSource->GetFrameType()) {
 					case AudioFrame::Type::eAFT_Mono:
 						{
-							FRAMECAST(_1);
+							FRAMECAST(1);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(mono);
 								FRAMECONVERT(2);
@@ -621,7 +622,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_2:
 						{
-							FRAMECAST(_2);
+							FRAMECAST(2);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -633,7 +634,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_21:
 						{
-							FRAMECAST(_21);
+							FRAMECAST(21);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -646,7 +647,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_31:
 						{
-							FRAMECAST(_31);
+							FRAMECAST(31);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -660,7 +661,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_5:
 						{
-							FRAMECAST(_5);
+							FRAMECAST(5);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -675,7 +676,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_51:
 						{
-							FRAMECAST(_51);
+							FRAMECAST(51);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -691,7 +692,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_7:
 						{
-							FRAMECAST(_7);
+							FRAMECAST(7);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -708,7 +709,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_71:
 						{
-							FRAMECAST(_71);
+							FRAMECAST(71);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -729,11 +730,11 @@ NSGameStart
 				break;
 			case AudioFrame::Type::eAFT_21:
 				{
-					SETOUTFRAME(_21);
+					SETOUTFRAME(21);
 					switch (playingsource->audioSource->GetFrameType()) {
 					case AudioFrame::Type::eAFT_Mono:
 						{
-							FRAMECAST(_1);
+							FRAMECAST(1);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(mono);
 								FRAMECONVERT(21);
@@ -745,7 +746,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_2:
 						{
-							FRAMECAST(_2);
+							FRAMECAST(2);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -758,7 +759,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_21:
 						{
-							FRAMECAST(_21);
+							FRAMECAST(21);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -772,7 +773,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_31:
 						{
-							FRAMECAST(_31);
+							FRAMECAST(31);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -787,7 +788,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_5:
 						{
-							FRAMECAST(_5);
+							FRAMECAST(5);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -803,7 +804,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_51:
 						{
-							FRAMECAST(_51);
+							FRAMECAST(51);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -820,7 +821,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_7:
 						{
-							FRAMECAST(_7);
+							FRAMECAST(7);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -838,7 +839,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_71:
 						{
-							FRAMECAST(_71);
+							FRAMECAST(71);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -860,11 +861,11 @@ NSGameStart
 				break;
 			case AudioFrame::Type::eAFT_31:
 				{
-					SETOUTFRAME(_31);
+					SETOUTFRAME(31);
 					switch (playingsource->audioSource->GetFrameType()) {
 					case AudioFrame::Type::eAFT_Mono:
 						{
-							FRAMECAST(_1);
+							FRAMECAST(1);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(mono);
 								FRAMECONVERT(31);
@@ -877,7 +878,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_2:
 						{
-							FRAMECAST(_2);
+							FRAMECAST(2);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -891,7 +892,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_21:
 						{
-							FRAMECAST(_21);
+							FRAMECAST(21);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -906,7 +907,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_31:
 						{
-							FRAMECAST(_31);
+							FRAMECAST(31);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -922,7 +923,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_5:
 						{
-							FRAMECAST(_5);
+							FRAMECAST(5);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -939,7 +940,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_51:
 						{
-							FRAMECAST(_51);
+							FRAMECAST(51);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -957,7 +958,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_7:
 						{
-							FRAMECAST(_7);
+							FRAMECAST(7);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -976,7 +977,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_71:
 						{
-							FRAMECAST(_71);
+							FRAMECAST(71);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -999,11 +1000,11 @@ NSGameStart
 				break;
 			case AudioFrame::Type::eAFT_5:
 				{
-					SETOUTFRAME(_5);
+					SETOUTFRAME(5);
 					switch (playingsource->audioSource->GetFrameType()) {
 					case AudioFrame::Type::eAFT_Mono:
 						{
-							FRAMECAST(_1);
+							FRAMECAST(1);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(mono);
 								FRAMECONVERT(5);
@@ -1017,7 +1018,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_2:
 						{
-							FRAMECAST(_2);
+							FRAMECAST(2);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1032,7 +1033,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_21:
 						{
-							FRAMECAST(_21);
+							FRAMECAST(21);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1048,7 +1049,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_31:
 						{
-							FRAMECAST(_31);
+							FRAMECAST(31);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1065,7 +1066,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_5:
 						{
-							FRAMECAST(_5);
+							FRAMECAST(5);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1083,7 +1084,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_51:
 						{
-							FRAMECAST(_51);
+							FRAMECAST(51);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1102,7 +1103,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_7:
 						{
-							FRAMECAST(_7);
+							FRAMECAST(7);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1122,7 +1123,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_71:
 						{
-							FRAMECAST(_71);
+							FRAMECAST(71);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1146,11 +1147,11 @@ NSGameStart
 				break;
 			case AudioFrame::Type::eAFT_51:
 				{
-					SETOUTFRAME(_51);
+					SETOUTFRAME(51);
 					switch (playingsource->audioSource->GetFrameType()) {
 					case AudioFrame::Type::eAFT_Mono:
 						{
-							FRAMECAST(_1);
+							FRAMECAST(1);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(mono);
 								FRAMECONVERT(51);
@@ -1165,7 +1166,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_2:
 						{
-							FRAMECAST(_2);
+							FRAMECAST(2);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1181,7 +1182,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_21:
 						{
-							FRAMECAST(_21);
+							FRAMECAST(21);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1198,7 +1199,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_31:
 						{
-							FRAMECAST(_31);
+							FRAMECAST(31);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1216,7 +1217,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_5:
 						{
-							FRAMECAST(_5);
+							FRAMECAST(5);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1235,7 +1236,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_51:
 						{
-							FRAMECAST(_51);
+							FRAMECAST(51);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1254,7 +1255,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_7:
 						{
-							FRAMECAST(_7);
+							FRAMECAST(7);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1275,7 +1276,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_71:
 						{
-							FRAMECAST(_71);
+							FRAMECAST(71);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1300,11 +1301,11 @@ NSGameStart
 				break;
 			case AudioFrame::Type::eAFT_7:
 				{
-					SETOUTFRAME(_7);
+					SETOUTFRAME(7);
 					switch (playingsource->audioSource->GetFrameType()) {
 					case AudioFrame::Type::eAFT_Mono:
 						{
-							FRAMECAST(_1);
+							FRAMECAST(1);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(mono);
 								FRAMECONVERT(7);
@@ -1320,7 +1321,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_2:
 						{
-							FRAMECAST(_2);
+							FRAMECAST(2);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1337,7 +1338,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_21:
 						{
-							FRAMECAST(_21);
+							FRAMECAST(21);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1355,7 +1356,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_31:
 						{
-							FRAMECAST(_31);
+							FRAMECAST(31);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1374,7 +1375,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_5:
 						{
-							FRAMECAST(_5);
+							FRAMECAST(5);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1394,7 +1395,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_51:
 						{
-							FRAMECAST(_51);
+							FRAMECAST(51);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1415,7 +1416,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_7:
 						{
-							FRAMECAST(_7);
+							FRAMECAST(7);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1437,7 +1438,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_71:
 						{
-							FRAMECAST(_71);
+							FRAMECAST(71);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1463,11 +1464,11 @@ NSGameStart
 				break;
 			case AudioFrame::Type::eAFT_71:
 				{
-					SETOUTFRAME(_71);
+					SETOUTFRAME(71);
 					switch (playingsource->audioSource->GetFrameType()) {
 					case AudioFrame::Type::eAFT_Mono:
 						{
-							FRAMECAST(_1);
+							FRAMECAST(1);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(mono);
 								FRAMECONVERT(71);
@@ -1484,7 +1485,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_2:
 						{
-							FRAMECAST(_2);
+							FRAMECAST(2);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1502,7 +1503,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_21:
 						{
-							FRAMECAST(_21);
+							FRAMECAST(21);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1521,7 +1522,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_31:
 						{
-							FRAMECAST(_31);
+							FRAMECAST(31);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(left);
 								FRAMEVOL(right);
@@ -1541,7 +1542,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_5:
 						{
-							FRAMECAST(_5);
+							FRAMECAST(5);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1562,7 +1563,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_51:
 						{
-							FRAMECAST(_51);
+							FRAMECAST(51);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1584,7 +1585,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_7:
 						{
-							FRAMECAST(_7);
+							FRAMECAST(7);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
@@ -1607,7 +1608,7 @@ NSGameStart
 						break;
 					case AudioFrame::Type::eAFT_71:
 						{
-							FRAMECAST(_71);
+							FRAMECAST(71);
 							for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) {
 								FRAMEVOL(front.left);
 								FRAMEVOL(front.right);
