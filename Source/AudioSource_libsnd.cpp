@@ -7,8 +7,6 @@ NSGameStart
 		this->sndFile = nullptr;
 		this->sndFile = sf_open(filename, SFM_READ, &this->sfInfo);
 
-		if (this->sndFile == nullptr || this->sndFile == NULL) assert(true);
-
 		if (!this->sndFile) {
 			int err = sf_error(this->sndFile);
 			pushError(err, sf_error_number(err));
