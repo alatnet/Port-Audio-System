@@ -165,6 +165,21 @@ NSGameStart
 		- float - volume level between 0.0f and 1.0f.
 		*/
 		float GetVolume(EAudioSection section);
+		/*
+		set a specific audio source volume.
+		params:
+		- float vol - level to set inbetween 0.0f and 1.0f.
+		- long id - the id that was returned from PlaySource.
+		*/
+		void SetVolume(float vol, long id);
+		/*
+		returns the volume level of a specific source.
+		params:
+		- long id - the id that was returned from PlaySource.
+		returns:
+		- float - volume level between 0.0f and 1.0f.
+		*/
+		float GetVolume(long id);
 	public: //error checking
 		//returns if port audio system has an error.
 		bool HasError();
@@ -186,6 +201,18 @@ NSGameStart
 			bool loop;
 			bool paused;
 			EAudioSection section;
+			float vol;
+
+			PlayingAudioSource() :
+				audioSource(nullptr),
+				currentFrame(0),
+				startFrame(0),
+				endFrame(0),
+				loop(false),
+				paused(false),
+				section(eAS_Music),
+				vol(1.0f)
+			{}
 
 			#ifdef PAS_CryGame
 				void GetMemoryUsage(ICrySizer* pSizer) const {

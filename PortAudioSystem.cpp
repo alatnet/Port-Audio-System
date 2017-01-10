@@ -77,6 +77,29 @@ NSGameStart
 		return this->m_vols[section];
 	}
 
+	void PortAudioSystem::SetVolume(float vol, long id){
+		if (vol >= 1.0f) vol = 1.0f;
+		if (vol <= 0.0f) vol = 0.0f;
+
+		m_callbackMutex.lock();
+		if (this->m_playingAudioSource.find(id) != this->m_playingAudioSource.end()) {
+			this->m_playingAudioSource[id]->vol = vol;
+		}
+		m_callbackMutex.unlock();
+	}
+
+	float PortAudioSystem::GetVolume(long id) {
+		float ret = 1.0f;
+
+		m_callbackMutex.lock();
+		if (this->m_playingAudioSource.find(id) != this->m_playingAudioSource.end()) {
+			ret = this->m_playingAudioSource[id]->vol;
+		}
+		m_callbackMutex.unlock();
+
+		return ret;
+	}
+
 	//basic functionallity
 	void PortAudioSystem::Play() {
 		if (!this->IsPlaying() && this->m_pAudioStream != nullptr) {
@@ -333,8 +356,8 @@ NSGameStart
 			AudioFrame::af2* aframesOut = (AudioFrame::_2*)framesOut;
 			for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) { //for each frame (based on how many frames were generated from conversion [possibly under framesPerBuffer])
 				//adjust volume
-				aframesOut[outFrameI].left *= (this->m_masterVol * this->m_vols[playingsource->section]);
-				aframesOut[outFrameI].right *= (this->m_masterVol * this->m_vols[playingsource->section]);
+				aframesOut[outFrameI].left *= (this->m_masterVol * this->m_vols[playingsource->section] * playingsource->vol);
+				aframesOut[outFrameI].right *= (this->m_masterVol * this->m_vols[playingsource->section] * playingsource->vol);
 
 				if (aframesOut[outFrameI].left != 0.0f){ //make sure we have data.
 					if (outFrame[outFrameI].left == 0.0f) //if the output frame has no data
@@ -371,9 +394,9 @@ NSGameStart
 			AudioFrame::af3* aframesOut = (AudioFrame::_3*)framesOut;
 			for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) { //for each frame (based on how many frames were generated from conversion [possibly under framesPerBuffer])
 				//adjust volume
-				aframesOut[outFrameI].left *= (this->m_masterVol * this->m_vols[playingsource->section]);
-				aframesOut[outFrameI].right *= (this->m_masterVol * this->m_vols[playingsource->section]);
-				aframesOut[outFrameI].center *= (this->m_masterVol * this->m_vols[playingsource->section]);
+				aframesOut[outFrameI].left *= (this->m_masterVol * this->m_vols[playingsource->section] * playingsource->vol);
+				aframesOut[outFrameI].right *= (this->m_masterVol * this->m_vols[playingsource->section] * playingsource->vol);
+				aframesOut[outFrameI].center *= (this->m_masterVol * this->m_vols[playingsource->section] * playingsource->vol);
 
 				AudioFrame::af2 frame = AudioFrame::Convert::To2CH(aframesOut[outFrameI]);
 
@@ -414,8 +437,8 @@ NSGameStart
 			AudioFrame::af2* aframesOut = (AudioFrame::_2*)framesOut;
 			for (long outFrameI = 0; outFrameI < src_data.output_frames_gen; outFrameI++) { //for each frame (based on how many frames were generated from conversion [possibly under framesPerBuffer])
 				//adjust volume
-				aframesOut[outFrameI].left *= (this->m_masterVol * this->m_vols[playingsource->section]);
-				aframesOut[outFrameI].right *= (this->m_masterVol * this->m_vols[playingsource->section]);
+				aframesOut[outFrameI].left *= (this->m_masterVol * this->m_vols[playingsource->section] * playingsource->vol);
+				aframesOut[outFrameI].right *= (this->m_masterVol * this->m_vols[playingsource->section] * playingsource->vol);
 
 				AudioFrame::af3 frame = AudioFrame::Convert::To3CH(aframesOut[outFrameI]);
 
@@ -457,24 +480,23 @@ NSGameStart
 			}
 			*/
 
-AudioFrame::af1 frame;
 			//macros
 			/* While most people say that macros will make everything harder to debug, this set of macros should work fine and allows for the code to be cleaner looking (that and im really, REALLY lazy...) */
 			//set the output buffer frame to the specific type
-			#define SETOUTFRAME(type) AudioFrame::af##type##* outFrame = (AudioFrame::af##type##*)outputBuffer;
+#			define SETOUTFRAME(type) AudioFrame::af##type##* outFrame = (AudioFrame::af##type##*)outputBuffer;
 
 			//cast the out frames to the correct frame type
-			#define FRAMECAST(type) AudioFrame::af##type##* aframesOut = (AudioFrame::af##type##*)framesOut;
+#			define FRAMECAST(type) AudioFrame::af##type##* aframesOut = (AudioFrame::af##type##*)framesOut;
 
 			//adjust the out frame specific channel volume
-			#define FRAMEVOL(channel) aframesOut[outFrameI].##channel *= (this->m_masterVol * this->m_vols[playingsource->section]);
+#			define FRAMEVOL(channel) aframesOut[outFrameI].##channel *= (this->m_masterVol * this->m_vols[playingsource->section] * playingsource->vol);
 
 			//convert to a specific frame type
-			#define FRAMECONVERT(type) AudioFrame::af##type frame = AudioFrame::Convert::To##type##CH(aframesOut[outFrameI]);
-			#define FRAMECONVERTMONO() AudioFrame::af1 frame = AudioFrame::Convert::ToMono(aframesOut[outFrameI]);
+#			define FRAMECONVERT(type) AudioFrame::af##type frame = AudioFrame::Convert::To##type##CH(aframesOut[outFrameI]);
+#			define FRAMECONVERTMONO() AudioFrame::af1 frame = AudioFrame::Convert::ToMono(aframesOut[outFrameI]);
 				
 			//output the out frame specific channel to the buffer
-			#define FRAMEOUT(channel) \
+#			define FRAMEOUT(channel) \
 			if (frame.##channel != 0.0f) { \
 				if (outFrame[outFrameI].##channel == 0.0f) outFrame[outFrameI].##channel = frame.##channel; \
 				else outFrame[outFrameI].##channel += frame.##channel; \
@@ -482,7 +504,7 @@ AudioFrame::af1 frame;
 			}
 
 			//directly output the frame specific channel to the buffer
-			#define FRAMEOUTD(channel) \
+#			define FRAMEOUTD(channel) \
 			if (aframesOut[outFrameI].##channel != 0.0f) { \
 				if (outFrame[outFrameI].##channel == 0.0f) outFrame[outFrameI].##channel = aframesOut[outFrameI].##channel; \
 				else outFrame[outFrameI].##channel += aframesOut[outFrameI].##channel; \
@@ -1636,13 +1658,13 @@ AudioFrame::af1 frame;
 			}
 
 			//clear the macros
-			#undef SETOUTFRAME
-			#undef FRAMECAST
-			#undef FRAMEVOL
-			#undef FRAMECONVERT
-			#undef FRAMECONVERTMONO
-			#undef FRAMEOUT
-			#undef FRAMEOUTD
+#			undef SETOUTFRAME
+#			undef FRAMECAST
+#			undef FRAMEVOL
+#			undef FRAMECONVERT
+#			undef FRAMECONVERTMONO
+#			undef FRAMEOUT
+#			undef FRAMEOUTD
 
 			playingsource->currentFrame += src_data.input_frames_used; //update the current position time based on how many frames were converted;
 
