@@ -44,10 +44,10 @@ NSGameStart
         //calculate the length of the file into a human readable format.
 		this->m_timeLength.totalSec = (1.0 * sfInfo.frames) / sfInfo.samplerate;
 		this->m_timeLength.hrs = (int)(this->m_timeLength.totalSec / 3600.0);
-		this->m_timeLength.min = (int)((this->m_timeLength.totalSec - (this->m_timeLength.hrs * 3600.0)) / 60.0);
-		this->m_timeLength.sec = this->m_timeLength.totalSec - (this->m_timeLength.hrs * 3600.0) - (this->m_timeLength.min * 60.0);
+		this->m_timeLength.minutes = (int)((this->m_timeLength.totalSec - (this->m_timeLength.hrs * 3600.0)) / 60.0);
+		this->m_timeLength.sec = this->m_timeLength.totalSec - (this->m_timeLength.hrs * 3600.0) - (this->m_timeLength.minutes * 60.0);
 
-		CLOG("[AudioSource_libsnd_memory] File Length: %i:%i:%f - %f", this->m_timeLength.hrs, this->m_timeLength.min, this->m_timeLength.sec, this->m_timeLength.totalSec);
+		CLOG("[AudioSource_libsnd_memory] File Length: %i:%i:%f - %f", this->m_timeLength.hrs, this->m_timeLength.minutes, this->m_timeLength.sec, this->m_timeLength.totalSec);
 
         //create the memory buffer
         this->m_buff = new float[sfInfo.frames * sfInfo.channels];

@@ -29,10 +29,10 @@ NSGameStart
 
 		this->m_timeLength.totalSec = (1.0 * this->sfInfo.frames) / this->sfInfo.samplerate;
 		this->m_timeLength.hrs = (int)(this->m_timeLength.totalSec / 3600.0);
-		this->m_timeLength.min = (int)((this->m_timeLength.totalSec - (this->m_timeLength.hrs * 3600.0)) / 60.0);
-		this->m_timeLength.sec = this->m_timeLength.totalSec - (this->m_timeLength.hrs * 3600.0) - (this->m_timeLength.min * 60.0);
+		this->m_timeLength.minutes = (int)((this->m_timeLength.totalSec - (this->m_timeLength.hrs * 3600.0)) / 60.0);
+		this->m_timeLength.sec = this->m_timeLength.totalSec - (this->m_timeLength.hrs * 3600.0) - (this->m_timeLength.minutes * 60.0);
 
-		CLOG("[AudioSource_libsnd] File Length: %i:%i:%f - %f", this->m_timeLength.hrs, this->m_timeLength.min, this->m_timeLength.sec, this->m_timeLength.totalSec);
+		CLOG("[AudioSource_libsnd] File Length: %i:%i:%f - %f", this->m_timeLength.hrs, this->m_timeLength.minutes, this->m_timeLength.sec, this->m_timeLength.totalSec);
 	}
 	
 	AudioSource_Libsnd::~AudioSource_Libsnd(){

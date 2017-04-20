@@ -200,8 +200,8 @@ NSGameStart
 		AudioSourceTime timeLength;
 		timeLength.totalSec = (1.0 * currTime) / this->m_playingAudioSource[id]->audioSource->GetSampleRate();
 		timeLength.hrs = (int)(timeLength.totalSec / 3600.0);
-		timeLength.min = (int)((timeLength.totalSec - (timeLength.hrs * 3600.0)) / 60.0);
-		timeLength.sec = timeLength.totalSec - (timeLength.hrs * 3600.0) - (timeLength.min * 60.0);
+		timeLength.minutes = (int)((timeLength.totalSec - (timeLength.hrs * 3600.0)) / 60.0);
+		timeLength.sec = timeLength.totalSec - (timeLength.hrs * 3600.0) - (timeLength.minutes * 60.0);
 
 		return timeLength;
 	}

@@ -292,12 +292,12 @@ NSGameStart
 	}
 
 	struct AudioSourceTime {
-		int hrs, min;
+		int hrs, minutes;
 		double sec, totalSec;
 
 		AudioSourceTime() :
 			hrs(0),
-			min(0),
+			minutes(0),
 			sec(0.0f),
 			totalSec(0.0f)
 		{};
